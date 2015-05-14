@@ -20,6 +20,7 @@ public class index{
 	private static HashMap<String, Integer> doc2docid = new HashMap<String, Integer>();
 	private static HashMap<Integer, ArrayList<Integer>> docid2termid = new HashMap<Integer, ArrayList<Integer>>();
 	private static HashMap<Integer, String> termid2term = new HashMap<Integer, String>();
+	private static HashMap<Integer, ArrayList<HashMap<Integer, Integer>>> termid2docidfrequency = new HashMap<Integer, ArrayList<HashMap<Integer, Integer>>>();
 	
 	//Comparators for sorting our maps
 	static ValueComparator t2tID = new ValueComparator(term2termid);
@@ -84,14 +85,18 @@ public class index{
 	}
 	
 	public static void main(String[] args){
+		
+		WordFrequencyCounter.storeStopWords();
 		Data data = null;
 		ObjectMapper  mapper = new ObjectMapper();
 		//"c://users/Ahsan/Documents/CS121/FileDump" Big Dump
 		//"c://users/Ahsan/Workspace/Java/Project3/FileDump Small Dump"
-		File folder = new File ("c://users/Ahsan/Workspace/Java/Project3/FileDump"); 
+		File folder = new File ("c://users/Ahsan/Documents/CS121/FileDump"); 
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> tokens = new ArrayList<String>();
 		ArrayList<Integer> termIDs = new ArrayList<Integer>();
+		ArrayList<Frequency> frequencies = new ArrayList<Frequency>();
+		
 		String URL;
 		int id;
 		
@@ -101,6 +106,7 @@ public class index{
 				tokens = Utilities.tokenizeFile(data.getText());
 				id = data.getID();
 				URL = data.get_ID();
+				frequencies = WordFrequencyCounter.computeWordFrequencies(tokens);
 				
 				addTerm2TermID(tokens);
 				
