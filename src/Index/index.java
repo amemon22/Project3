@@ -18,6 +18,7 @@ public class index{
 	//HashMaps for storing our data
 	private static HashMap<String, Integer> term2termid = new HashMap<String, Integer>();
 	private static HashMap<String, Integer> doc2docid = new HashMap<String, Integer>();
+	private static HashMap<Integer, ArrayList<Integer>> docid2termid = new HashMap<Integer, ArrayList<Integer>>();
 	
 	//Comparators for sorting our maps
 	static ValueComparator t2tID = new ValueComparator(term2termid);
@@ -29,6 +30,11 @@ public class index{
 	
 	//Counters for various IDs
 	private static Integer term2termidCounter = 0;
+
+	//Helper method for adding docIDs with their term IDs for our docid2termID Map
+	private static void addDocID2TermID(Integer docID, ArrayList<Integer> termIDs){
+		docid2termid.put(docID, termIDs);
+	}
 	
 	//Helper method for adding unique tokens for our term2termID Map
 	private static void addTerm2TermID(ArrayList<String> tokens){
@@ -61,6 +67,17 @@ public class index{
 		}
 	}
 	
+	//Returns all the termIDs associated with a list of tokens
+	private static ArrayList<Integer> getTermIDs(ArrayList<String> tokens){
+		ArrayList<Integer> termIDs = new ArrayList<Integer>();
+
+		for (String token : tokens){
+			termIDs.add(term2termid.get(token));
+		}
+
+		return termIDs;
+	}
+	
 	public static void main(String[] args){
 		Data data = null;
 		ObjectMapper  mapper = new ObjectMapper();
@@ -69,6 +86,7 @@ public class index{
 		File folder = new File ("c://users/Ahsan/Documents/CS121/FileDump"); 
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> tokens = new ArrayList<String>();
+		ArrayList<Integer> termIDs = new ArrayList<Integer>();
 		String URL;
 		int id;
 		
@@ -76,11 +94,15 @@ public class index{
 			try {
 				data = mapper.readValue(file, Data.class);
 				tokens = Utilities.tokenizeFile(data.getText());
-				addTerm2TermID(tokens);
-				
 				id = data.getID();
 				URL = data.get_ID();
+				addTerm2TermID(tokens);
+				
+				termIDs = getTermIDs(tokens);
+
 				addDoc2DocID(URL,id);
+				
+				addDocID2TermID(id, termIDs);
 				
 			} catch (JsonParseException e) {
 				e.printStackTrace();
@@ -95,8 +117,10 @@ public class index{
 		sorteddoc2docid.putAll(doc2docid);
 		writeToFile(sortedterm2termid.toString(), "term2termid.txt");
 		writeToFile(sorteddoc2docid.toString(), "doc2docid.txt");
+		writeToFile(docid2termid.toString(), "docid2termid.txt");
 		//System.out.println("Term2TermID: " + sortedterm2termid.toString());
 		//System.out.println("Doc2DocID: " + sorteddoc2docid.toString());
+		//System.out.println("DocID2TermID: " + docid2termid.toString());
 		System.out.println("Done");
 	}
 	
@@ -116,3 +140,5 @@ class ValueComparator implements Comparator<String> {
         } // returning 0 would merge keys
     }
 }
+
+
