@@ -19,6 +19,7 @@ public class index{
 	private static HashMap<String, Integer> term2termid = new HashMap<String, Integer>();
 	private static HashMap<String, Integer> doc2docid = new HashMap<String, Integer>();
 	private static HashMap<Integer, ArrayList<Integer>> docid2termid = new HashMap<Integer, ArrayList<Integer>>();
+	private static HashMap<Integer, String> termid2term = new HashMap<Integer, String>();
 	
 	//Comparators for sorting our maps
 	static ValueComparator t2tID = new ValueComparator(term2termid);
@@ -31,6 +32,11 @@ public class index{
 	//Counters for various IDs
 	private static Integer term2termidCounter = 0;
 
+	//Helper method for adding termIDs to terms for out termid2term Map
+	private static void addTermID2Term(Integer counter, String token){
+		termid2term.put(counter, token);
+	}
+	
 	//Helper method for adding docIDs with their term IDs for our docid2termID Map
 	private static void addDocID2TermID(Integer docID, ArrayList<Integer> termIDs){
 		docid2termid.put(docID, termIDs);
@@ -42,6 +48,7 @@ public class index{
 			if (!term2termid.containsKey(token)){
 				term2termidCounter++;
 				term2termid.put(token, term2termidCounter);
+				addTermID2Term(term2termidCounter, token);
 			}
 		}
 	}
@@ -70,11 +77,9 @@ public class index{
 	//Returns all the termIDs associated with a list of tokens
 	private static ArrayList<Integer> getTermIDs(ArrayList<String> tokens){
 		ArrayList<Integer> termIDs = new ArrayList<Integer>();
-
 		for (String token : tokens){
 			termIDs.add(term2termid.get(token));
 		}
-
 		return termIDs;
 	}
 	
@@ -83,7 +88,7 @@ public class index{
 		ObjectMapper  mapper = new ObjectMapper();
 		//"c://users/Ahsan/Documents/CS121/FileDump" Big Dump
 		//"c://users/Ahsan/Workspace/Java/Project3/FileDump Small Dump"
-		File folder = new File ("c://users/Ahsan/Documents/CS121/FileDump"); 
+		File folder = new File ("c://users/Ahsan/Workspace/Java/Project3/FileDump"); 
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> tokens = new ArrayList<String>();
 		ArrayList<Integer> termIDs = new ArrayList<Integer>();
@@ -96,6 +101,7 @@ public class index{
 				tokens = Utilities.tokenizeFile(data.getText());
 				id = data.getID();
 				URL = data.get_ID();
+				
 				addTerm2TermID(tokens);
 				
 				termIDs = getTermIDs(tokens);
@@ -118,6 +124,7 @@ public class index{
 		writeToFile(sortedterm2termid.toString(), "term2termid.txt");
 		writeToFile(sorteddoc2docid.toString(), "doc2docid.txt");
 		writeToFile(docid2termid.toString(), "docid2termid.txt");
+		writeToFile(termid2term.toString(), "termid2term.txt");
 		//System.out.println("Term2TermID: " + sortedterm2termid.toString());
 		//System.out.println("Doc2DocID: " + sorteddoc2docid.toString());
 		//System.out.println("DocID2TermID: " + docid2termid.toString());
