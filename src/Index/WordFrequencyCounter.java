@@ -55,8 +55,8 @@ public final class WordFrequencyCounter {
 	 * @param words A list of words.
 	 * @return A list of word frequencies, ordered by decreasing frequency.
 	 */
-	public static ArrayList<Frequency> computeWordFrequencies(ArrayList<String> words) {
-		Map <String, Integer> map = new HashMap<String, Integer>();
+	public static ArrayList <Frequency> computeWordFrequencies(ArrayList<String> words) {
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		ArrayList <Frequency> ret = new ArrayList<Frequency>();
 		
 		for (String word: words){ 

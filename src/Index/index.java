@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.codehaus.jackson.JsonParseException;
@@ -32,7 +33,20 @@ public class index{
 	
 	//Counters for various IDs
 	private static Integer term2termidCounter = 0;
-
+	
+	//Helper method for adding termIDs to docIDs and term frequency
+	private static void addTermID2DocIDFrequency(Integer docID, ArrayList<Frequency> frequencies){
+		for (Frequency f: frequencies){
+			HashMap<Integer,Integer> toAdd = new HashMap<Integer, Integer>();
+			toAdd.put(docID, f.getFrequency());
+			int termID = term2termid.get(f.getText());
+			if(!termid2docidfrequency.containsKey(termID)){
+				termid2docidfrequency.put(termID, new ArrayList<HashMap<Integer, Integer>>());
+			}
+			termid2docidfrequency.get(termID).add(toAdd);
+		}
+	}
+	
 	//Helper method for adding termIDs to terms for out termid2term Map
 	private static void addTermID2Term(Integer counter, String token){
 		termid2term.put(counter, token);
@@ -84,6 +98,7 @@ public class index{
 		return termIDs;
 	}
 	
+	
 	public static void main(String[] args){
 		
 		WordFrequencyCounter.storeStopWords();
@@ -108,10 +123,13 @@ public class index{
 				URL = data.get_ID();
 				frequencies = WordFrequencyCounter.computeWordFrequencies(tokens);
 				
+	
 				addTerm2TermID(tokens);
 				
 				termIDs = getTermIDs(tokens);
-
+				
+				addTermID2DocIDFrequency(id,frequencies);
+				
 				addDoc2DocID(URL,id);
 				
 				addDocID2TermID(id, termIDs);
@@ -131,9 +149,11 @@ public class index{
 		writeToFile(sorteddoc2docid.toString(), "doc2docid.txt");
 		writeToFile(docid2termid.toString(), "docid2termid.txt");
 		writeToFile(termid2term.toString(), "termid2term.txt");
+		writeToFile(termid2docidfrequency.toString(), "termid2docidfrequency.txt");
 		//System.out.println("Term2TermID: " + sortedterm2termid.toString());
 		//System.out.println("Doc2DocID: " + sorteddoc2docid.toString());
 		//System.out.println("DocID2TermID: " + docid2termid.toString());
+		//System.out.println("TermID2DocIDFrequency: " + termid2docidfrequency.toString());
 		System.out.println("Done");
 	}
 	
