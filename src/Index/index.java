@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.codehaus.jackson.JsonParseException;
@@ -14,6 +15,8 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 public class index{
+	//Helper Map for creating our termid2docidtf_ids
+	private static HashMap<Integer, Integer> docid2docsize = new HashMap<Integer, Integer>();
 	
 	//HashMaps for storing our data
 	private static HashMap<String, Integer> term2termid = new HashMap<String, Integer>();
@@ -21,6 +24,7 @@ public class index{
 	private static HashMap<Integer, ArrayList<Integer>> docid2termid = new HashMap<Integer, ArrayList<Integer>>();
 	private static HashMap<Integer, String> termid2term = new HashMap<Integer, String>();
 	private static HashMap<Integer, HashMap<Integer, Integer>> termid2docidfrequency = new HashMap<Integer, HashMap<Integer, Integer>>();
+	private static HashMap<Integer, HashMap<Integer, Double>> termid2docidtf_idf = new HashMap<Integer, HashMap<Integer, Double>>();
 	
 	//Comparators for sorting our maps
 	static ValueComparator t2tID = new ValueComparator(term2termid);
@@ -33,15 +37,49 @@ public class index{
 	//Counters for various IDs
 	private static Integer term2termidCounter = 0;
 	
-	//Calculates (Number of times term t appears in a document) / (Total number of terms in the document)
-	//private static void calcTermFrequency()
+	//Returns number of documents with a certain term
+	private static int getNumOfDocumentsWithTerm(int termID){
+		return termid2docidfrequency.get(termID).size();
+	}
+	
+	//Helper method for adding to our docid2docsize
+	private static void addDocID2DocSize(int DocID, int size){
+		docid2docsize.put(DocID, size);
+	}
+	
+	//Calculates log_e(Total Number of Documents/Number of documents with term in it)
+	private static double calculateIDF(int termID, int numOfDocuments){
+		int numOfDocumentsWithTerm = getNumOfDocumentsWithTerm(termID);
+		return Math.log((double) numOfDocuments/numOfDocumentsWithTerm);
+	}
 	
 	
+	//Calculates (Number of times term appears in document) / (Total number of terms in the document)
+	private static double calculateTF(int termID, int docID, int total_words){
+		int frequency = termid2docidfrequency.get(termID).get(docID);
+		return (double) frequency / total_words;
+	}
 	
+	//Helper method for adding termIDs to docIDs and tf_idf
+	private static void addTermID2DocIDtf_idf(){
+		int numOfDocuments = docid2docsize.size();
+		for (Map.Entry<Integer, HashMap<Integer, Integer>> entry : termid2docidfrequency.entrySet()){
+			int termID = entry.getKey();
+			termid2docidtf_idf.put(termID, new HashMap<Integer, Double>());
+			for(Map.Entry<Integer, Integer> docidfrequency : entry.getValue().entrySet()){
+				int docID = docidfrequency.getKey();
+				int docSize = docid2docsize.get(docID);
+				double tf = calculateTF(termID, docID, docSize);
+				double idf = calculateIDF(termID, numOfDocuments);
+				double tf_idf = Math.round(tf * idf * 1000.0) / 1000.0 ;
+				termid2docidtf_idf.get(termID).put(docID, tf_idf);
+			}
+		}
+	}
 	
 	//Helper method for adding termIDs to docIDs and term frequency
 	private static void addTermID2DocIDFrequency(Integer docID, ArrayList<Frequency> frequencies){
-		for (Frequency f: frequencies){
+		for (Frequency f : frequencies){
 			int termID = term2termid.get(f.getText());
 			if(!termid2docidfrequency.containsKey(termID)){
 				termid2docidfrequency.put(termID, new HashMap<Integer, Integer>());
@@ -109,7 +147,7 @@ public class index{
 		ObjectMapper  mapper = new ObjectMapper();
 		//"c://users/Ahsan/Documents/CS121/FileDump" Big Dump
 		//"c://users/Ahsan/Workspace/Java/Project3/FileDump Small Dump"
-		File folder = new File ("c://users/Ahsan/Documents/CS121/FileDump"); 
+		File folder = new File ("c://users/Ahsan/Workspace/Java/Project3/FileDump"); 
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> tokens = new ArrayList<String>();
 		ArrayList<Integer> termIDs = new ArrayList<Integer>();
@@ -138,6 +176,9 @@ public class index{
 				
 				addDocID2TermID(id, termIDs);
 				
+				addDocID2DocSize(id, tokens.size());
+				
+				
 			} catch (JsonParseException e) {
 				e.printStackTrace();
 			} catch (JsonMappingException e) {
@@ -163,9 +204,11 @@ public class index{
 		termid2term.clear();
 		writeToFile(termid2docidfrequency.toString(), "termid2docidfrequency.txt");
 		
+		addTermID2DocIDtf_idf();
+		writeToFile(termid2docidtf_idf.toString(), "termid2docidtf_idf.txt");
+
 		System.out.println("Done");
 	}
-	
 }
 
 class ValueComparator implements Comparator<String> {
