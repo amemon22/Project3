@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 
 import org.codehaus.jackson.JsonParseException;
@@ -21,7 +20,7 @@ public class index{
 	private static HashMap<String, Integer> doc2docid = new HashMap<String, Integer>();
 	private static HashMap<Integer, ArrayList<Integer>> docid2termid = new HashMap<Integer, ArrayList<Integer>>();
 	private static HashMap<Integer, String> termid2term = new HashMap<Integer, String>();
-	private static HashMap<Integer, ArrayList<HashMap<Integer, Integer>>> termid2docidfrequency = new HashMap<Integer, ArrayList<HashMap<Integer, Integer>>>();
+	private static HashMap<Integer, HashMap<Integer, Integer>> termid2docidfrequency = new HashMap<Integer, HashMap<Integer, Integer>>();
 	
 	//Comparators for sorting our maps
 	static ValueComparator t2tID = new ValueComparator(term2termid);
@@ -34,19 +33,23 @@ public class index{
 	//Counters for various IDs
 	private static Integer term2termidCounter = 0;
 	
+	//Calculates (Number of times term t appears in a document) / (Total number of terms in the document)
+	//private static void calcTermFrequency()
+	
+	
+	
+	
 	//Helper method for adding termIDs to docIDs and term frequency
 	private static void addTermID2DocIDFrequency(Integer docID, ArrayList<Frequency> frequencies){
 		for (Frequency f: frequencies){
-			HashMap<Integer,Integer> toAdd = new HashMap<Integer, Integer>();
-			toAdd.put(docID, f.getFrequency());
 			int termID = term2termid.get(f.getText());
 			if(!termid2docidfrequency.containsKey(termID)){
-				termid2docidfrequency.put(termID, new ArrayList<HashMap<Integer, Integer>>());
+				termid2docidfrequency.put(termID, new HashMap<Integer, Integer>());
 			}
-			termid2docidfrequency.get(termID).add(toAdd);
+			termid2docidfrequency.get(termID).put(docID, f.getFrequency());
+		
 		}
 	}
-	
 	//Helper method for adding termIDs to terms for out termid2term Map
 	private static void addTermID2Term(Integer counter, String token){
 		termid2term.put(counter, token);
@@ -123,6 +126,7 @@ public class index{
 				URL = data.get_ID();
 				frequencies = WordFrequencyCounter.computeWordFrequencies(tokens);
 				
+				System.out.println(id + " " + URL);
 	
 				addTerm2TermID(tokens);
 				
@@ -142,18 +146,23 @@ public class index{
 				e.printStackTrace();
 			}
 		}
-		
+		//These are used to makes the map in order
 		sortedterm2termid.putAll(term2termid);
 		sorteddoc2docid.putAll(doc2docid);
+		
+		//After writing to the file, we clear the maps that we don't need just to speed up the process
 		writeToFile(sortedterm2termid.toString(), "term2termid.txt");
+		sortedterm2termid.clear();
+		term2termid.clear();
 		writeToFile(sorteddoc2docid.toString(), "doc2docid.txt");
+		sorteddoc2docid.clear();
+		doc2docid.clear();
 		writeToFile(docid2termid.toString(), "docid2termid.txt");
+		docid2termid.clear();
 		writeToFile(termid2term.toString(), "termid2term.txt");
+		termid2term.clear();
 		writeToFile(termid2docidfrequency.toString(), "termid2docidfrequency.txt");
-		//System.out.println("Term2TermID: " + sortedterm2termid.toString());
-		//System.out.println("Doc2DocID: " + sorteddoc2docid.toString());
-		//System.out.println("DocID2TermID: " + docid2termid.toString());
-		//System.out.println("TermID2DocIDFrequency: " + termid2docidfrequency.toString());
+		
 		System.out.println("Done");
 	}
 	

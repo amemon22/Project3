@@ -13,7 +13,7 @@ public class Utilities{
 			
 		ArrayList<String> tokens = new ArrayList<String>();
 		for (String str : input.split("\\W")){
-			if (str.length() > 1){
+			if (str.length() > 1 && !WordFrequencyCounter.getStopwords().contains(str.toLowerCase())){  //if the string length is greater and 1 and is not a stopword
 				tokens.add(str.toLowerCase());
 			}
 		}
