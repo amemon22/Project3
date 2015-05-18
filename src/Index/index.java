@@ -1,3 +1,6 @@
+//Ahsan Memon 59212236
+//Evan Munemura 43513937
+
 package Index;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -300,35 +303,35 @@ public class index{
 		//After writing to the file, we clear the maps that we don't need just to speed up the process
 		//Write to CSV Files
 		writeTermToIDCSV(sortedterm2termid, "term2termid.csv");
-		sortedterm2termid.clear();
-		term2termid.clear();
+		//sortedterm2termid.clear();
+		//term2termid.clear();
 		writeTermToIDCSV(sorteddoc2docid, "doc2docid.csv");
-		sorteddoc2docid.clear();
-		doc2docid.clear();
+		//sorteddoc2docid.clear();
+		//doc2docid.clear();
 		writeIDToTermCSV(termid2term, "termid2term.csv");
-		termid2term.clear();
+		//termid2term.clear();
 		writeFrequencyCSV(termid2docidfrequency, "frequency.csv");
-		termid2docidfrequency.clear();
+		//termid2docidfrequency.clear();
 		writetfidfCSV(termid2docidtf_idf, "tfidf.csv");
-		termid2docidtf_idf.clear();
+		//termid2docidtf_idf.clear();
 		writeDoc2TermIDCSV(docid2termid, "doc2termid.csv");
-		docid2termid.clear();
+		//docid2termid.clear();
 		
 		//Write to Text Files
-//		writeToFile(sortedterm2termid.toString(), "term2termid.txt");
-//		sortedterm2termid.clear();
-//		term2termid.clear();
-//		writeToFile(sorteddoc2docid.toString(), "doc2docid.txt");
-//		sorteddoc2docid.clear();
-//		doc2docid.clear();
-//		writeToFile(docid2termid.toString(), "docid2termid.txt");
-//		docid2termid.clear();
-//		writeToFile(termid2term.toString(), "termid2term.txt");
-//		termid2term.clear();
-//		writeToFile(termid2docidfrequency.toString(), "termid2docidfrequency.txt");
+		writeToFile(sortedterm2termid.toString(), "term2termid.txt");
+		sortedterm2termid.clear();
+		term2termid.clear();
+		writeToFile(sorteddoc2docid.toString(), "doc2docid.txt");
+		sorteddoc2docid.clear();
+		doc2docid.clear();
+		writeToFile(docid2termid.toString(), "docid2termid.txt");
+		docid2termid.clear();
+		writeToFile(termid2term.toString(), "termid2term.txt");
+		termid2term.clear();
+		writeToFile(termid2docidfrequency.toString(), "termid2docidfrequency.txt");
 		
-//		addTermID2DocIDtf_idf();
-//		writeToFile(termid2docidtf_idf.toString(), "termid2docidtf_idf.txt");
+		addTermID2DocIDtf_idf();
+		writeToFile(termid2docidtf_idf.toString(), "termid2docidtf_idf.txt");
 
 		System.out.println("Done");
 	}

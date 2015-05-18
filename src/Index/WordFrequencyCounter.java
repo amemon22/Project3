@@ -1,5 +1,5 @@
 //Ahsan Memon 59212236
-//Evan Munemura 4351393
+//Evan Munemura 43513937
 
 package Index;
 
@@ -72,7 +72,7 @@ public final class WordFrequencyCounter {
 			ret.add(new Frequency(entry.getKey(),entry.getValue()));
 		}
 		
-		Collections.sort(ret,new Comparator<Frequency>(){
+		/*Collections.sort(ret,new Comparator<Frequency>(){
 			@Override
 			public int compare(Frequency o1, Frequency o2) {
 				// reversed sequence
@@ -82,7 +82,8 @@ public final class WordFrequencyCounter {
 				}
 				return cmp;
 			}
-		});
+		})
+		;*/
 		
 		return ret;
 	}
