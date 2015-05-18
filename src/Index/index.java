@@ -147,7 +147,7 @@ public class index{
 		ObjectMapper  mapper = new ObjectMapper();
 		//"c://users/Ahsan/Documents/CS121/FileDump" Big Dump
 		//"c://users/Ahsan/Workspace/Java/Project3/FileDump Small Dump"
-		File folder = new File ("c://users/Ahsan/Workspace/Java/Project3/FileDump"); 
+		File folder = new File ("c://users/Ahsan/Documents/CS121/FileDump"); 
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> tokens = new ArrayList<String>();
 		ArrayList<Integer> termIDs = new ArrayList<Integer>();
