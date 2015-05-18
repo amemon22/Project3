@@ -1,3 +1,6 @@
+//Ahsan Memon 59212236
+//Evan Munemura 43513937
+
 package Index;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -130,6 +136,109 @@ public class index{
 		}
 	}
 	
+	//CSV File Writers
+	//Helper Method to write from a given <String, Integer> hashmap to a given csv file
+	private static void writeTermToIDCSV(TreeMap<String, Integer> sortedterm2termid2, String filename){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(filename, "UTF-8");
+			for(Entry<String, Integer> entry : sortedterm2termid2.entrySet()){
+				writer.write(entry.getKey() + ", " + entry.getValue() + "\r\n");
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//Helper Method to write from a termid2term hashmap to csv file
+	private static void writeIDToTermCSV(HashMap<Integer, String> map, String filename){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(filename, "UTF-8");
+			for(Object id : map.keySet()){
+				writer.write(id + ", " + map.get(id) + "\r\n");
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//Helper Method to write from a given tfidf hashmap to a given csv file
+	private static void writetfidfCSV(HashMap<Integer, HashMap<Integer, Double>> map, String filename){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(filename, "UTF-8");
+			for(Integer id : map.keySet() ){
+				writer.write(id + ", ");
+				HashMap<Integer, Double> innerMap = map.get(id);
+				for(Entry<Integer, Double> entry : innerMap.entrySet()){
+			        writer.write(entry.getKey() + " = " + entry.getValue());
+			        writer.write(", ");
+				}
+				writer.write("\r\n");
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//Helper Method to write from a given termid2docidfrequency hashmap to a given csv file
+	private static void writeFrequencyCSV(HashMap<Integer, HashMap<Integer, Integer>> map, String filename){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(filename, "UTF-8");
+			for(Integer id : map.keySet() ){
+				writer.write(id + ", ");
+				HashMap<Integer, Integer> innerMap = map.get(id);
+				for(Entry<Integer, Integer> entry : innerMap.entrySet()){
+			        writer.write(entry.getKey() + " = " + entry.getValue());
+			        writer.write(", ");
+				}
+				writer.write("\r\n");
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//Helper Method to write from a given doc2termid hashmap to a given csv file
+	private static void writeDoc2TermIDCSV(HashMap<Integer, ArrayList<Integer>> map, String filename){
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(filename, "UTF-8");
+			for(Integer id : map.keySet() ){
+				writer.write(id + ", ");
+				ArrayList<Integer> inner = map.get(id);
+				for(int i = 0; i < inner.size(); i++){
+					if(inner.equals(null) || inner.isEmpty()){
+						writer.write("\r\n");
+					}else {
+						writer.write(inner.get(i) + ", ");
+					}
+			        
+				}
+				writer.write("\r\n");
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	//Returns all the termIDs associated with a list of tokens
 	private static ArrayList<Integer> getTermIDs(ArrayList<String> tokens){
 		ArrayList<Integer> termIDs = new ArrayList<Integer>();
@@ -147,7 +256,11 @@ public class index{
 		ObjectMapper  mapper = new ObjectMapper();
 		//"c://users/Ahsan/Documents/CS121/FileDump" Big Dump
 		//"c://users/Ahsan/Workspace/Java/Project3/FileDump Small Dump"
+<<<<<<< HEAD
 		File folder = new File ("c://users/Ahsan/Documents/CS121/FileDump"); 
+=======
+		File folder = new File ("LargeDump"); 
+>>>>>>> origin/master
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> tokens = new ArrayList<String>();
 		ArrayList<Integer> termIDs = new ArrayList<Integer>();
@@ -192,6 +305,23 @@ public class index{
 		sorteddoc2docid.putAll(doc2docid);
 		
 		//After writing to the file, we clear the maps that we don't need just to speed up the process
+		//Write to CSV Files
+		writeTermToIDCSV(sortedterm2termid, "term2termid.csv");
+		//sortedterm2termid.clear();
+		//term2termid.clear();
+		writeTermToIDCSV(sorteddoc2docid, "doc2docid.csv");
+		//sorteddoc2docid.clear();
+		//doc2docid.clear();
+		writeIDToTermCSV(termid2term, "termid2term.csv");
+		//termid2term.clear();
+		writeFrequencyCSV(termid2docidfrequency, "frequency.csv");
+		//termid2docidfrequency.clear();
+		writetfidfCSV(termid2docidtf_idf, "tfidf.csv");
+		//termid2docidtf_idf.clear();
+		writeDoc2TermIDCSV(docid2termid, "doc2termid.csv");
+		//docid2termid.clear();
+		
+		//Write to Text Files
 		writeToFile(sortedterm2termid.toString(), "term2termid.txt");
 		sortedterm2termid.clear();
 		term2termid.clear();
@@ -225,5 +355,3 @@ class ValueComparator implements Comparator<String> {
         } // returning 0 would merge keys
     }
 }
-
-

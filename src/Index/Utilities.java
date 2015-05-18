@@ -1,3 +1,6 @@
+//Ahsan Memon 59212236
+//Evan Munemura 43513937
+
 package Index;
 
 import java.util.ArrayList;
@@ -13,7 +16,7 @@ public class Utilities{
 			
 		ArrayList<String> tokens = new ArrayList<String>();
 		for (String str : input.split("\\W")){
-			if (str.length() > 1 && !WordFrequencyCounter.getStopwords().contains(str.toLowerCase())){  //if the string length is greater and 1 and is not a stopword
+			if (str.length() > 1){
 				tokens.add(str.toLowerCase());
 			}
 		}
