@@ -6,12 +6,9 @@ package Index;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -104,8 +101,6 @@ public class index{
 				termid2docidtf_idf.get(termID).put(docID, tf_idf);
 			}
 		}
-		
-		
 	}
 	
 	//Helper method for adding termIDs to docIDs and term frequency
@@ -163,32 +158,15 @@ public class index{
 		return termIDs;
 	}
 	
-	//returns for 5 docIDs in docid2tf_idf given a termID
-	private static ArrayList<Integer> getTopDocIds(String termID){
-		HashMap<Integer, Double> docidtf_idf = termid2docidtf_idf.get(termID);
-		ArrayList<Double> tf_idf = new ArrayList(docidtf_idf.values());
-		Collections.sort(tf_idf);
-		ArrayList<Integer> ret = new ArrayList<Integer>();
-		return ret;
-	}
-	
-	//returns top websites given a word
-	private static String searchWord(String input){
-		int termID = term2termid.get(input);
-
-		
-		
-		return "hello";
-	}
 	
 	public static void main(String[] args){
 		
 		WordFrequencyCounter.storeStopWords();
 		Data data = null;
 		ObjectMapper  mapper = new ObjectMapper();
-		//"c://users/Ahsan/Documents/CS121/FileDump" Big Dump
+		//"C://Users/Ahsan Memon/Desktop/FileDump" Big Dump
 		//"c://users/Ahsan/Workspace/Java/Project3/FileDump Small Dump"
-		File folder = new File ("c://users/ahsanm/Desktop/FileDump"); 
+		File folder = new File ("c://users/Ahsan Memon/workspace/Project3/FileDump"); 
 
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> tokens = new ArrayList<String>();
@@ -233,15 +211,17 @@ public class index{
 		}
 		
 		addTermID2DocIDtf_idf();
-
+		
+		ObjectOutputStreamTest.storeObject(term2termid, "term2termid.txt");
+		ObjectOutputStreamTest.storeObject(doc2docid, "doc2docid.txt");
+		ObjectOutputStreamTest.storeObject(docid2doc, "docid2doc.txt");
+		ObjectOutputStreamTest.storeObject(docid2termid, "docid2termid.txt");
+		ObjectOutputStreamTest.storeObject(termid2term, "termid2term.txt");
+		ObjectOutputStreamTest.storeObject(termid2docidfrequency, "termid2docidfrequency.txt");
+		ObjectOutputStreamTest.storeObject(termid2docidtf_idf, "termid2docidtf_idf.txt");
 
 		System.out.println("Done");
-		Scanner reader = new Scanner(System.in);
-		while(true){
-			System.out.println("What would you like to search for? ");
-			String input = reader.nextLine();
-			System.out.println(searchWord(input));
-		}
+
 	}
 }
 
@@ -260,3 +240,16 @@ class ValueComparator implements Comparator<String> {
     }
 }
 
+class ValueComparator2  implements Comparator<Integer> {
+	HashMap<Integer, Double> base;
+	public ValueComparator2(HashMap<Integer, Double> base){
+		this.base = base;
+	}
+	public int compare(Integer a, Integer b){
+		if(base.get(a) >= base.get(b)){
+			return -1;
+		} else{
+			return 1;
+		}
+	}
+}
